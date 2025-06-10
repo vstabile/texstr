@@ -1,0 +1,28 @@
+/* Computer Modern Font Family */
+@font-face {
+  font-family: "Computer Modern";
+  src: url("https://mirrors.ctan.org/fonts/cm-unicode/fonts/otf/cmunrm.otf");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Computer Modern";
+  src: url("https://mirrors.ctan.org/fonts/cm-unicode/fonts/otf/cmunti.otf");
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Computer Modern";
+  src: url("https://mirrors.ctan.org/fonts/cm-unicode/fonts/otf/cmunbx.otf");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Computer Modern";
+  src: url("https://mirrors.ctan.org/fonts/cm-unicode/fonts/otf/cmunbi.otf");
+  font-weight: bold;
+  font-style: italic;
+}
