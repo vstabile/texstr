@@ -2,6 +2,7 @@
 import { render } from "solid-js/web";
 import "./index.css";
 import { Route, Router } from "@solidjs/router";
+import { MetaProvider } from "@solidjs/meta";
 import { nip19 } from "nostr-tools";
 import Home from "./pages/Home";
 import Article from "./pages/Article";
@@ -22,11 +23,13 @@ const filters = {
 
 render(
   () => (
-    <Router>
-      <Route path="/" component={Home} />
-      <Route path="/a/:naddr" component={Article} matchFilters={filters} />
-      <Route path="*" component={NotFound} />
-    </Router>
+    <MetaProvider>
+      <Router>
+        <Route path="/" component={Home} />
+        <Route path="/a/:naddr" component={Article} matchFilters={filters} />
+        <Route path="*" component={NotFound} />
+      </Router>
+    </MetaProvider>
   ),
   root!
 );

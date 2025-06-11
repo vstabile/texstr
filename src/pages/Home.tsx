@@ -2,9 +2,11 @@ import type { Component } from "solid-js";
 import { createSignal, For, from, Show } from "solid-js";
 import { A, useNavigate } from "@solidjs/router";
 import { nip19 } from "nostr-tools";
+import { Title, Meta } from "@solidjs/meta";
 import Footer from "../components/Footer";
 import { queryStore } from "../stores/queryStore";
 import { ArticlesQuery } from "../queries/articles";
+import { APP_NAME, APP_TAGLINE, META_CONFIG } from "../config/meta";
 
 const Home: Component = () => {
   const navigate = useNavigate();
@@ -50,13 +52,22 @@ const Home: Component = () => {
 
   return (
     <div class="min-h-screen bg-white text-black font-serif flex flex-col">
+      <Title>{META_CONFIG.title}</Title>
+      <Meta name="description" content={META_CONFIG.description} />
+      <Meta property="og:title" content={META_CONFIG.title} />
+      <Meta property="og:description" content={META_CONFIG.description} />
+      <Meta property="og:type" content={META_CONFIG.type} />
+      <Meta property="og:url" content={window.location.href} />
+      <Meta property="og:site_name" content={META_CONFIG.siteName} />
+      <Meta name="twitter:card" content={META_CONFIG.twitterCard} />
+      <Meta name="twitter:title" content={META_CONFIG.title} />
+      <Meta name="twitter:description" content={META_CONFIG.shortDescription} />
+
       <div class="flex-1 max-w-[800px] mx-auto px-6 py-16 w-full">
         {/* Header section */}
         <header class="text-center space-y-4">
-          <h1 class="text-4xl font-bold tracking-tight">TeXstr</h1>
-          <p class="text-xl italic text-gray-600">
-            Mathematical Discourse on Nostr
-          </p>
+          <h1 class="text-4xl font-bold tracking-tight">{APP_NAME}</h1>
+          <p class="text-xl italic text-gray-600">{APP_TAGLINE}</p>
         </header>
 
         {/* Main content */}

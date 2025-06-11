@@ -13,6 +13,7 @@ export type Article = {
   authorUrl?: string;
   date: string;
   content: string;
+  summary: string;
 };
 
 function presenter(articleEvent: NostrEvent, profileEvent?: NostrEvent) {
@@ -22,6 +23,9 @@ function presenter(articleEvent: NostrEvent, profileEvent?: NostrEvent) {
     authorUrl: `https://njump.me/${nip19.npubEncode(articleEvent.pubkey)}`,
     date: formatDate(articleEvent.created_at),
     content: articleEvent.content,
+    summary:
+      getTagValue(articleEvent, "summary") ||
+      articleEvent.content.substring(0, 200),
   };
 }
 
