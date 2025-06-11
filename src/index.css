@@ -4,6 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  font-size: 15px; /* Change this value to scale all rem units */
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

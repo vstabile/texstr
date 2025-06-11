@@ -18,4 +18,5 @@ rxNostr.setDefaultRelays(RELAYS);
 
 export const KINDS = {
   ARTICLE: 30023,
+  PROFILE: 0,
 };

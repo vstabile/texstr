@@ -1,29 +1,17 @@
 import type { Component } from "solid-js";
-import { createSignal, from, onMount } from "solid-js";
-import { useNavigate } from "@solidjs/router";
+import { createSignal, For, from, Show } from "solid-js";
+import { A, useNavigate } from "@solidjs/router";
 import { nip19 } from "nostr-tools";
-import { eventStore } from "../stores/eventStore";
 import Footer from "../components/Footer";
-import { KINDS } from "../lib/nostr";
-import { articlesLoader } from "../lib/loaders";
-import ArticleList from "../components/ArticleList";
-import { SCIENTIFIC_TAGS } from "../lib/constants";
+import { queryStore } from "../stores/queryStore";
+import { ArticlesQuery } from "../queries/articles";
 
 const Home: Component = () => {
   const navigate = useNavigate();
   const [inputValue, setInputValue] = createSignal("");
   const [error, setError] = createSignal("");
 
-  onMount(() => {
-    articlesLoader.next(undefined);
-  });
-
-  const articles = from(
-    eventStore.timeline({
-      kinds: [KINDS.ARTICLE],
-      "#t": SCIENTIFIC_TAGS,
-    })
-  );
+  const articles = from(queryStore.createQuery(ArticlesQuery));
 
   const validateAndNavigate = (e: SubmitEvent) => {
     e.preventDefault();
@@ -62,7 +50,7 @@ const Home: Component = () => {
 
   return (
     <div class="min-h-screen bg-white text-black font-serif flex flex-col">
-      <div class="flex-1 max-w-[800px] mx-auto px-8 py-16 w-full">
+      <div class="flex-1 max-w-[800px] mx-auto px-6 py-16 w-full">
         {/* Header section */}
         <header class="text-center space-y-4">
           <h1 class="text-4xl font-bold tracking-tight">TeXstr</h1>
@@ -75,12 +63,11 @@ const Home: Component = () => {
         <main class="space-y-8 mt-12">
           <section class="prose prose-lg">
             <h2 class="text-xl font-bold mb-4">Abstract</h2>
-            <p class="text-justify leading-relaxed">
-              TeXstr is a specialized Nostr client designed for viewing and
-              sharing mathematical content through NIP-23 events with LaTeX
-              support. It provides a seamless platform for mathematical
-              discourse, enabling users to engage in technical discussions with
-              properly rendered mathematical notation.
+            <p class="text-md text-justify leading-normal">
+              TeXstr is designed for viewing and sharing mathematical content
+              through NIP-23 events with LaTeX support. It provides a seamless
+              platform for mathematical discourse, enabling technical
+              discussions with properly rendered mathematical notation.
             </p>
           </section>
 
@@ -111,7 +98,46 @@ const Home: Component = () => {
             </form>
           </section>
 
-          <ArticleList articles={articles()} />
+          <Show when={articles()}>
+            <section class="space-y-4">
+              <h2 class="text-2xl font-bold mb-6">Recent Articles</h2>
+              <For each={articles()}>
+                {(article) => (
+                  <article class="border-b border-gray-100 pb-6 last:border-0">
+                    <h3 class="text-xl">
+                      <A
+                        href={article.path}
+                        class="text-gray-900 hover:text-gray-600 no-underline hover:underline"
+                      >
+                        {article.title || "Untitled"}
+                      </A>
+                    </h3>
+                    <div class="text-sm text-gray-500 mb-2 font-serif">
+                      {article.author && (
+                        <>
+                          <span class="font-medium">{article.author}</span>
+                          <span class="mx-2">·</span>
+                        </>
+                      )}
+                      <span class="italic">{article.date}</span>
+                    </div>
+                    <p class="text-gray-600 line-clamp-2">
+                      {article.summary}...
+                    </p>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                      {article.tags.map((tag) => (
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </article>
+                )}
+              </For>
+            </section>
+          </Show>
+
+          {/* <ArticleList articles={articles()} /> */}
         </main>
       </div>
 
