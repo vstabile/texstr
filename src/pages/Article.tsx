@@ -35,9 +35,9 @@ export default function Article() {
           <Header />
 
           <div class="flex-1 max-w-[800px] mx-auto px-6 py-16 w-full">
-            <div class="prose prose-lg max-w-none dark:prose-invert prose-headings:font-serif prose-headings:font-normal prose-h1:text-3xl prose-h1:mb-8 prose-h1:text-center prose-p:text-justify prose-p:leading-relaxed prose-a:text-blue-800 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-pre:bg-gray-50 dark:prose-pre:bg-gray-800 prose-pre:border prose-pre:border-gray-200 dark:prose-pre:border-gray-700">
+            <div class="prose prose-md max-w-none dark:prose-invert prose-headings:font-serif prose-headings:font-normal prose-h1:text-3xl prose-h1:mb-8 prose-h1:text-center prose-p:text-justify prose-p:leading-normal prose-a:text-blue-800 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-pre:bg-gray-50 dark:prose-pre:bg-gray-800 prose-pre:border prose-pre:border-gray-200 dark:prose-pre:border-gray-700">
               <h1 class="!mb-4">{article()!.title}</h1>
-              <div class="text-center text-lg font-serif mb-4">
+              <div class="text-center text-sm font-serif mb-10">
                 <Show when={article()!.author}>
                   <a
                     href={article()!.authorUrl}

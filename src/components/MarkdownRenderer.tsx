@@ -167,10 +167,5 @@ export default function MarkdownRenderer(props: Props) {
     }
   });
 
-  return (
-    <div
-      ref={containerRef}
-      class="prose prose-lg dark:prose-invert max-w-none"
-    />
-  );
+  return <div ref={containerRef} />;
 }
