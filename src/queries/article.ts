@@ -10,6 +10,7 @@ import { KINDS, RELAYS } from "../lib/nostr";
 export type Article = {
   title?: string;
   author?: string;
+  authorUrl?: string;
   date: string;
   content: string;
 };
@@ -18,6 +19,7 @@ function presenter(articleEvent: NostrEvent, profileEvent?: NostrEvent) {
   return {
     title: getTagValue(articleEvent, "title"),
     author: profileEvent ? profileName(profileEvent) : undefined,
+    authorUrl: `https://njump.me/${nip19.npubEncode(articleEvent.pubkey)}`,
     date: formatDate(articleEvent.created_at),
     content: articleEvent.content,
   };

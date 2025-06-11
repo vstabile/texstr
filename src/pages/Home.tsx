@@ -115,7 +115,14 @@ const Home: Component = () => {
                     <div class="text-sm text-gray-500 mb-2 font-serif">
                       {article.author && (
                         <>
-                          <span class="font-medium">{article.author}</span>
+                          <a
+                            href={article.authorUrl}
+                            class="!text-gray-500 font-medium"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {article.author}
+                          </a>
                           <span class="mx-2">·</span>
                         </>
                       )}

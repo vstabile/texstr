@@ -31,9 +31,14 @@ export default function Article() {
               <h1 class="!mb-4">{article()!.title}</h1>
               <div class="text-center text-lg font-serif mb-4">
                 <Show when={article()!.author}>
-                  <div class="text-gray-800 tracking-wide uppercase text-base">
+                  <a
+                    href={article()!.authorUrl}
+                    class="!text-gray-800 tracking-wide uppercase text-base hover:!text-gray-600"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     {article()!.author}
-                  </div>
+                  </a>
                 </Show>
                 <div class="text-sm text-gray-500 mt-2 italic">
                   {article()!.date}
