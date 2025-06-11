@@ -39,24 +39,61 @@ export default function MarkdownRenderer(props: Props) {
       breaks: true,
     });
 
-    // Handle both inline math ($...$) and display math ($$...$$)
+    // First handle display math before markdown processing
     let content = props.content;
-
-    // First handle display math
     content = content.replace(/\$\$([\s\S]*?)\$\$/g, (_, tex) => {
+      // Use a special marker that won't be processed by markdown
       return `<div class="math-tex math-tex-display">${tex.trim()}</div>`;
     });
 
-    // Then handle inline math
-    content = content.replace(/\$([^\$]+)\$/g, (_, tex) => {
-      return `<span class="math-tex">${tex.trim()}</span>`;
-    });
-
-    // Render markdown and ensure we get a string
+    // Render markdown
     const rendered = marked.parse(content);
     containerRef.innerHTML = typeof rendered === "string" ? rendered : "";
 
-    // Render LaTeX
+    // Process inline LaTeX only in non-code elements
+    const processInlineLatex = (container: HTMLElement) => {
+      // Get all text nodes that are not inside <code> elements
+      const walker = document.createTreeWalker(
+        container,
+        NodeFilter.SHOW_TEXT,
+        {
+          acceptNode: (node) => {
+            // Skip if node is inside a code element
+            if (node.parentElement?.closest("code")) {
+              return NodeFilter.FILTER_REJECT;
+            }
+            return NodeFilter.FILTER_ACCEPT;
+          },
+        }
+      );
+
+      const textNodes: Text[] = [];
+      let node;
+      while ((node = walker.nextNode())) {
+        textNodes.push(node as Text);
+      }
+
+      // Process inline LaTeX in each text node
+      textNodes.forEach((node) => {
+        let content = node.textContent || "";
+
+        // Handle only inline math now
+        content = content.replace(/\$([^\$]+)\$/g, (_, tex) => {
+          return `<span class="math-tex">${tex.trim()}</span>`;
+        });
+
+        if (content !== node.textContent) {
+          const temp = document.createElement("div");
+          temp.innerHTML = content;
+          node.parentNode?.replaceChild(temp.firstChild!, node);
+        }
+      });
+    };
+
+    // Process inline LaTeX in non-code elements
+    processInlineLatex(containerRef);
+
+    // Render all LaTeX
     renderLatex(containerRef);
   });
 
