@@ -5,6 +5,7 @@ import { Route, Router } from "@solidjs/router";
 import { nip19 } from "nostr-tools";
 import Home from "./pages/Home";
 import Article from "./pages/Article";
+import NotFound from "./pages/NotFound";
 
 const root = document.getElementById("root");
 
@@ -24,6 +25,7 @@ render(
     <Router>
       <Route path="/" component={Home} />
       <Route path="/a/:naddr" component={Article} matchFilters={filters} />
+      <Route path="*" component={NotFound} />
     </Router>
   ),
   root!
