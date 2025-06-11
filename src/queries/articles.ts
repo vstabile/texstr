@@ -1,9 +1,9 @@
-import type { Query } from "applesauce-core";
+import type { Model } from "applesauce-core";
 import { map, of, startWith, switchMap, scan } from "rxjs";
 import { formatDate, profileName } from "../lib/utils";
 import { nip19, type NostrEvent } from "nostr-tools";
 import { getTagValue } from "applesauce-core/helpers";
-import { articlesLoader, replaceableLoader } from "../lib/loaders";
+import { timelineLoader, addressLoader } from "../lib/loaders";
 import { KINDS } from "../lib/nostr";
 import { SCIENTIFIC_TAGS } from "../lib/constants";
 
@@ -37,8 +37,9 @@ function presenter(articleEvent: NostrEvent, profileEvent?: NostrEvent) {
   };
 }
 
-export function ArticlesQuery(): Query<Articles | []> {
-  articlesLoader.next(undefined);
+export function ArticlesModel(): Model<Articles | []> {
+  // Load articles timeline
+  timelineLoader().subscribe();
 
   return (store) =>
     store
@@ -51,10 +52,10 @@ export function ArticlesQuery(): Query<Articles | []> {
           if (!articles) return of([]);
 
           articles.forEach((article) => {
-            replaceableLoader.next({
+            addressLoader({
               pubkey: article.pubkey,
               kind: KINDS.PROFILE,
-            });
+            }).subscribe();
           });
 
           return store
@@ -70,8 +71,8 @@ export function ArticlesQuery(): Query<Articles | []> {
                 ],
                 []
               ),
-              map((profiles) => {
-                const profileMap = new Map(profiles.map((p) => [p.pubkey, p]));
+              map((profiles: NostrEvent[]) => {
+                const profileMap = new Map(profiles.map((p: NostrEvent) => [p.pubkey, p]));
 
                 return articles.map((article) =>
                   presenter(article, profileMap.get(article.pubkey))

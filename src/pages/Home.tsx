@@ -5,8 +5,8 @@ import { nip19 } from "nostr-tools";
 import { Title, Meta } from "@solidjs/meta";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import { queryStore } from "../stores/queryStore";
-import { ArticlesQuery } from "../queries/articles";
+import { eventStore } from "../stores/eventStore";
+import { ArticlesModel } from "../queries/articles";
 import { APP_NAME, APP_TAGLINE, META_CONFIG } from "../config/meta";
 
 const Home: Component = () => {
@@ -14,7 +14,7 @@ const Home: Component = () => {
   const [inputValue, setInputValue] = createSignal("");
   const [error, setError] = createSignal("");
 
-  const articles = from(queryStore.createQuery(ArticlesQuery));
+  const articles = from(eventStore.model(ArticlesModel));
 
   const validateAndNavigate = (e: SubmitEvent) => {
     e.preventDefault();

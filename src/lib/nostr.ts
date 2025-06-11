@@ -1,10 +1,6 @@
-import { createRxNostr, noopVerifier } from "rx-nostr";
+import { RelayPool } from "applesauce-relay";
 
-export const rxNostr = createRxNostr({
-  // skip verification here because we are going to verify events at the event store
-  skipVerify: true,
-  verifier: noopVerifier,
-});
+export const pool = new RelayPool()
 
 export const RELAYS = [
   "wss://relay.primal.net",
@@ -13,8 +9,6 @@ export const RELAYS = [
   "wss://relay.nostr.band",
   "wss://relay.vertexlab.io",
 ];
-
-rxNostr.setDefaultRelays(RELAYS);
 
 export const KINDS = {
   ARTICLE: 30023,

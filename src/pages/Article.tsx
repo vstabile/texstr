@@ -1,17 +1,17 @@
 import { useParams } from "@solidjs/router";
 import { from, Match, Show, Switch } from "solid-js";
 import { Title, Meta } from "@solidjs/meta";
-import { queryStore } from "../stores/queryStore";
+import { eventStore } from "../stores/eventStore";
 import MarkdownRenderer from "../components/MarkdownRenderer";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import ArticleSkeleton from "../components/ArticleSkeleton";
-import { ArticleQuery } from "../queries/article";
+import { ArticleModel } from "../queries/article";
 import { APP_NAME } from "../config/meta";
 
 export default function Article() {
   const params = useParams();
-  const article = from(queryStore.createQuery(ArticleQuery, params.naddr));
+  const article = from(eventStore.model(ArticleModel, params.naddr));
 
   return (
     <div class="min-h-screen bg-white dark:bg-gray-900 flex flex-col">
