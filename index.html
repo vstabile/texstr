@@ -4,6 +4,32 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
+    <script>
+      // Check for dark mode preference and set it before the page loads
+      function updateTheme() {
+        if (
+          localStorage.theme === "dark" ||
+          (!("theme" in localStorage) &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches)
+        ) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+      }
+
+      // Initial theme setup
+      updateTheme();
+
+      // Listen for system theme changes
+      window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .addEventListener("change", (e) => {
+          if (!("theme" in localStorage)) {
+            document.documentElement.classList.toggle("dark", e.matches);
+          }
+        });
+    </script>
     <link rel="icon" type="image/png" href="/favicon.png" />
     <title>TeXstr</title>
   </head>
