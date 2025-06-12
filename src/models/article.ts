@@ -11,7 +11,8 @@ export type Article = {
   title?: string;
   author?: string;
   authorUrl?: string;
-  date: string;
+  formatedDate: string;
+  publishedTime: string;
   content: string;
   summary: string;
 };
@@ -21,7 +22,8 @@ function presenter(articleEvent: NostrEvent, profileEvent?: NostrEvent) {
     title: getTagValue(articleEvent, "title"),
     author: profileEvent ? profileName(profileEvent) : undefined,
     authorUrl: `https://njump.me/${nip19.npubEncode(articleEvent.pubkey)}`,
-    date: formatDate(articleEvent.created_at),
+    formatedDate: formatDate(articleEvent.created_at),
+    publishedTime: new Date(articleEvent.created_at * 1000).toISOString(),
     content: articleEvent.content,
     summary:
       getTagValue(articleEvent, "summary") ||

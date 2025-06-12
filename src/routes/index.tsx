@@ -4,9 +4,8 @@ import { A, useNavigate } from "@solidjs/router";
 import { nip19 } from "nostr-tools";
 import { Title, Meta } from "@solidjs/meta";
 import { eventStore } from "../stores/eventStore";
-import { ArticlesModel } from "../queries/articles";
-import { isServer } from "solid-js/web";
-import { APP_NAME, APP_TAGLINE, META_CONFIG } from "../config/meta";
+import { ArticlesModel } from "../models/articles";
+import { APP_NAME, APP_TAGLINE, META_CONFIG, BASE_URL } from "../config/meta";
 
 const Home: Component = () => {
   const navigate = useNavigate();
@@ -57,11 +56,13 @@ const Home: Component = () => {
       <Meta property="og:title" content={META_CONFIG.title} />
       <Meta property="og:description" content={META_CONFIG.description} />
       <Meta property="og:type" content={META_CONFIG.type} />
-      <Meta property="og:url" content={isServer ? "" : window.location.href} />
+      <Meta property="og:url" content={BASE_URL} />
       <Meta property="og:site_name" content={META_CONFIG.siteName} />
+      <Meta property="og:image" content="/texstr.png" />
       <Meta name="twitter:card" content={META_CONFIG.twitterCard} />
       <Meta name="twitter:title" content={META_CONFIG.title} />
       <Meta name="twitter:description" content={META_CONFIG.shortDescription} />
+      <Meta name="twitter:image" content="/texstr.png" />
 
       <div class="flex-1 max-w-[800px] mx-auto px-6 py-16 w-full">
         {/* Header section */}
@@ -74,8 +75,8 @@ const Home: Component = () => {
         <main class="mt-12">
           <section class="prose prose-lg">
             <h2 class="text-foreground text-xl font-bold mb-4">Abstract</h2>
-            <p class="text-justify leading-normal text-foreground">
-              TeXstr is designed for viewing and sharing mathematical content
+            <p class="text-justify leading-normal text-secondary-foreground">
+              View and share mathematical content
               through NIP-23 events with LaTeX support. It provides a seamless
               platform for mathematical discourse, enabling technical
               discussions with properly rendered mathematical notation.
@@ -125,7 +126,7 @@ const Home: Component = () => {
                         {article.title || "Untitled"}
                       </A>
                     </h3>
-                    <div class="text-sm text-muted-foreground mb-2 font-serif">
+                    <div class="text-sm text-muted-foreground mb-1 font-serif">
                       {article.author && (
                         <>
                           <a
@@ -141,7 +142,7 @@ const Home: Component = () => {
                       )}
                       <span class="italic">{article.date}</span>
                     </div>
-                    <p class="text-muted-foreground line-clamp-2">
+                    <p class="text-secondary-foreground line-clamp-2">
                       {article.summary}...
                     </p>
                     <div class="flex flex-wrap gap-2 mt-3">

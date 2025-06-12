@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@solidjs/meta": "^0.29.4",
-    "@solidjs/router": "^0.15.3",
+    "@solidjs/router": "^0.15.0",
+    "@solidjs/start": "^1.1.0",
     "applesauce-core": "^2.0.0",
     "applesauce-loaders": "^2.0.0",
     "applesauce-relay": "^2.0.0",
