@@ -1,53 +1,28 @@
-import {
-  ReplaceableLoader,
-  SingleEventLoader,
-  TimelineLoader,
-} from "applesauce-loaders";
-import { KINDS, RELAYS, rxNostr } from "./nostr";
+import { createAddressLoader } from "applesauce-loaders/loaders/address-loader";
+import { createEventLoader } from "applesauce-loaders/loaders/event-loader";
+import { createTimelineLoader } from "applesauce-loaders/loaders/timeline-loader";
 import { eventStore } from "../stores/eventStore";
-import type { Filter, NostrEvent } from "nostr-tools";
-import { map, Observable } from "rxjs";
-import { createRxOneshotReq } from "rx-nostr";
 import { SCIENTIFIC_TAGS } from "./constants";
+import { KINDS, pool, RELAYS } from "./nostr";
 
-function nostrRequest(
-  relays: string[],
-  filters: Filter[],
-  id?: string
-): Observable<NostrEvent> {
-  const req = createRxOneshotReq({ filters, rxReqId: id });
-  return rxNostr
-    .use(req, { on: { relays } })
-    .pipe(map((packet) => packet.event));
-}
-
-export const replaceableLoader = new ReplaceableLoader(nostrRequest, {
-  lookupRelays: RELAYS,
+// Create functional loaders for v2
+export const addressLoader = createAddressLoader(pool, {
+  eventStore,
+  lookupRelays: RELAYS
 });
 
-export const eventLoader = new SingleEventLoader(nostrRequest, {
-  extraRelays: RELAYS,
+export const eventLoader = createEventLoader(pool, {
+  eventStore,
+  extraRelays: RELAYS
 });
 
-export const articlesLoader = new TimelineLoader(
-  nostrRequest,
-  TimelineLoader.simpleFilterMap(RELAYS, [
-    {
-      kinds: [KINDS.ARTICLE],
-      "#t": SCIENTIFIC_TAGS,
-      limit: 10,
-    },
-  ])
+export const timelineLoader = createTimelineLoader(
+  pool,
+  RELAYS,
+  {
+    kinds: [KINDS.ARTICLE],
+    "#t": SCIENTIFIC_TAGS,
+    limit: 10,
+  },
+  { eventStore }
 );
-
-replaceableLoader.subscribe((event) => {
-  eventStore.add(event);
-});
-
-eventLoader.subscribe((event) => {
-  eventStore.add(event);
-});
-
-articlesLoader.subscribe((event) => {
-  eventStore.add(event);
-});
