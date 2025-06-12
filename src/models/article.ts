@@ -1,5 +1,13 @@
 import type { Model } from "applesauce-core";
-import { ignoreElements, map, merge, mergeWith, of, startWith, switchMap } from "rxjs";
+import {
+  ignoreElements,
+  map,
+  merge,
+  mergeWith,
+  startWith,
+  switchMap,
+  EMPTY,
+} from "rxjs";
 import { formatDate, profileName } from "../lib/utils";
 import { nip19, type NostrEvent } from "nostr-tools";
 import { getTagValue, mergeRelaySets } from "applesauce-core/helpers";
@@ -37,10 +45,10 @@ export function ArticleModel(naddr: string): Model<Article | undefined> {
 
   const { pubkey, identifier, kind, relays } = data;
 
-  return (store) =>  {
+  return (store) => {
     const result = store.replaceable(kind, pubkey, identifier).pipe(
       switchMap((article?: NostrEvent) => {
-        if (!article) return of(undefined);
+        if (!article) return EMPTY;
 
         return store.replaceable(KINDS.PROFILE, pubkey).pipe(
           map((profile?: NostrEvent) => presenter(article, profile)),
@@ -61,12 +69,12 @@ export function ArticleModel(naddr: string): Model<Article | undefined> {
       addressLoader({
         pubkey: pubkey,
         kind: 0,
-      }),
+      })
     ).pipe(
       // Ignore events from loaders since they get added to the store
       ignoreElements(),
       // Return the result of the store
       mergeWith(result)
-    )
-  }
+    );
+  };
 }

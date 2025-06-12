@@ -1,5 +1,5 @@
 import type { Component } from "solid-js";
-import { createSignal, For, from, Show } from "solid-js";
+import { createSignal, For, from, Suspense } from "solid-js";
 import { A, useNavigate } from "@solidjs/router";
 import { nip19 } from "nostr-tools";
 import { Title, Meta } from "@solidjs/meta";
@@ -76,10 +76,10 @@ const Home: Component = () => {
           <section class="prose prose-lg">
             <h2 class="text-foreground text-xl font-bold mb-4">Abstract</h2>
             <p class="text-justify leading-normal text-secondary-foreground">
-              View and share mathematical content
-              through NIP-23 events with LaTeX support. It provides a seamless
-              platform for mathematical discourse, enabling technical
-              discussions with properly rendered mathematical notation.
+              View and share mathematical content through NIP-23 events with
+              LaTeX support. It provides a seamless platform for mathematical
+              discourse, enabling technical discussions with properly rendered
+              mathematical notation.
             </p>
           </section>
 
@@ -112,7 +112,7 @@ const Home: Component = () => {
             </form>
           </section>
 
-          <Show when={articles()}>
+          <Suspense>
             <section class="space-y-4">
               <h2 class="text-2xl font-bold mb-6">Recent Articles</h2>
               <For each={articles()}>
@@ -156,7 +156,7 @@ const Home: Component = () => {
                 )}
               </For>
             </section>
-          </Show>
+          </Suspense>
         </main>
       </div>
     </>
