@@ -1,10 +1,11 @@
+import { isServer } from "solid-js/web";
 import { createRxNostr, noopVerifier } from "rx-nostr";
+import { WebSocket } from "ws";
 
-export const rxNostr = createRxNostr({
-  // skip verification here because we are going to verify events at the event store
-  skipVerify: true,
-  verifier: noopVerifier,
-});
+// Provide WebSocket for server-side
+if (isServer) {
+  (global as any).WebSocket = WebSocket;
+}
 
 export const RELAYS = [
   "wss://relay.primal.net",
@@ -14,9 +15,16 @@ export const RELAYS = [
   "wss://relay.vertexlab.io",
 ];
 
-rxNostr.setDefaultRelays(RELAYS);
-
 export const KINDS = {
   ARTICLE: 30023,
   PROFILE: 0,
 };
+
+export const rxNostr = createRxNostr({
+  // skip verification here because we are going to verify events at the event store
+  skipVerify: true,
+  verifier: noopVerifier,
+});
+
+// Set default relays
+rxNostr.setDefaultRelays(RELAYS);

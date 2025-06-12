@@ -1,34 +1,16 @@
-import { createSignal, onMount } from "solid-js";
+import { useTheme } from "./ThemeProvider";
 import { cn } from "../lib/utils";
 
 export default function DarkModeToggle() {
-  const [isDark, setIsDark] = createSignal(false);
-
-  onMount(() => {
-    // Check initial dark mode preference from localStorage first, then system preference
-    const storedTheme = localStorage.getItem("theme");
-    const isDarkMode =
-      storedTheme === "dark" ||
-      (!storedTheme &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches);
-    setIsDark(isDarkMode);
-    document.documentElement.classList.toggle("dark", isDarkMode);
-  });
-
-  const toggleDarkMode = () => {
-    const newMode = !isDark();
-    setIsDark(newMode);
-    document.documentElement.classList.toggle("dark", newMode);
-    localStorage.setItem("theme", newMode ? "dark" : "light");
-  };
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <button
-      onClick={toggleDarkMode}
+      onClick={toggleTheme}
       class={cn(
         "p-2 rounded-lg transition-colors",
-        "hover:bg-gray-100 dark:hover:bg-gray-700",
-        "focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-500"
+        "hover:bg-muted",
+        "focus:outline-none"
       )}
       aria-label="Toggle dark mode"
     >
@@ -37,8 +19,8 @@ export default function DarkModeToggle() {
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class={cn(
-            "w-6 h-6 transition-all text-gray-800 dark:text-gray-200",
-            isDark() ? "scale-0 opacity-0" : "scale-100 opacity-100"
+            "w-6 h-6 transition-all text-foreground",
+            theme() === "dark" ? "scale-0 opacity-0" : "scale-100 opacity-100"
           )}
           fill="none"
           viewBox="0 0 24 24"
@@ -56,8 +38,8 @@ export default function DarkModeToggle() {
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class={cn(
-            "w-6 h-6 absolute top-0 transition-all text-gray-800 dark:text-gray-200",
-            isDark() ? "scale-100 opacity-100" : "scale-0 opacity-0"
+            "w-6 h-6 absolute top-0 transition-all text-foreground",
+            theme() === "dark" ? "scale-100 opacity-100" : "scale-0 opacity-0"
           )}
           fill="none"
           viewBox="0 0 24 24"
