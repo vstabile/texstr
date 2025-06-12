@@ -2,13 +2,13 @@ import type { Component } from "solid-js";
 
 const Footer: Component = () => {
   return (
-    <footer class="mt-auto py-8 px-6 border-t border-gray-100 dark:border-gray-800">
+    <footer class="mt-auto py-8 px-6 border-t border-border bg-background">
       <div class="max-w-[800px] mx-auto text-center">
         <a
           href="https://github.com/vstabile/texstr"
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-400 dark:hover:text-gray-300 transition-colors"
+          class="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
           aria-label="GitHub repository"
         >
           <svg

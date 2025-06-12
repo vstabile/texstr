@@ -15,7 +15,6 @@ export default {
       fontFamily: {
         serif: [
           "Computer Modern Serif",
-          "CMU Serif",
           "Georgia",
           "Cambria",
           "Times New Roman",

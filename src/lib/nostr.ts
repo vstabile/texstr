@@ -1,4 +1,11 @@
 import { RelayPool } from "applesauce-relay";
+import { isServer } from "solid-js/web";
+import { WebSocket } from "ws";
+
+// Provide WebSocket for server-side
+if (isServer) {
+  (global as any).WebSocket = WebSocket;
+}
 
 export const pool = new RelayPool()
 

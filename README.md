@@ -21,13 +21,13 @@ Visit the live application at [texstr.org](https://texstr.org).
 2. Install dependencies:
 
    ```bash
-   bun install
+   npm install
    ```
 
 3. Start the development server:
 
    ```bash
-   bun run dev
+   npm run dev
    ```
 
 ## Contributing
