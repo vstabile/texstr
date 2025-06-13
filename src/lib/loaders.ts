@@ -8,12 +8,12 @@ import { KINDS, pool, RELAYS } from "./nostr";
 // Create functional loaders for v2
 export const addressLoader = createAddressLoader(pool, {
   eventStore,
-  lookupRelays: RELAYS
+  lookupRelays: RELAYS,
 });
 
 export const eventLoader = createEventLoader(pool, {
   eventStore,
-  extraRelays: RELAYS
+  extraRelays: RELAYS,
 });
 
 export const timelineLoader = createTimelineLoader(
@@ -26,3 +26,15 @@ export const timelineLoader = createTimelineLoader(
   },
   { eventStore }
 );
+
+export function otsLoader(id: string) {
+  return createTimelineLoader(
+    pool,
+    RELAYS,
+    {
+      kinds: [KINDS.TIMESTAMP],
+      "#e": [id],
+    },
+    { eventStore }
+  )();
+}

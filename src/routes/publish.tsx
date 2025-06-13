@@ -2,7 +2,7 @@ import { createSignal } from "solid-js";
 import MarkdownRenderer from "../components/MarkdownRenderer";
 import { formatDate } from "~/lib/utils";
 
-export default function Preview() {
+export default function Publish() {
   const [title, setTitle] = createSignal("Test");
   const [content, setContent] = createSignal(
     "# Welcome to the Markdown Editor\n\nStart typing your markdown here..."

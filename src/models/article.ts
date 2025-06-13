@@ -9,35 +9,59 @@ import {
   EMPTY,
   take,
   timer,
+  combineLatest,
+  of,
+  distinctUntilChanged,
+  shareReplay,
+  tap,
 } from "rxjs";
 import { formatDate, profileName } from "../lib/utils";
 import { nip19, type NostrEvent } from "nostr-tools";
 import { getTagValue, mergeRelaySets } from "applesauce-core/helpers";
 import type { AddressPointer } from "nostr-tools/nip19";
-import { addressLoader } from "../lib/loaders";
+import { addressLoader, otsLoader } from "../lib/loaders";
 import { KINDS, RELAYS } from "../lib/nostr";
+import {
+  verify,
+  verifiers,
+  read,
+  info,
+} from "@lacrypta/typescript-opentimestamps";
+import { base64ToBytes } from "~/lib/ots";
 
 export type Article = {
+  id: string;
   title?: string;
   author?: string;
   authorUrl?: string;
   formatedDate: string;
-  publishedTime: string;
+  publishedAt: string;
+  timestampedAt?: string;
   content: string;
   summary: string;
+  ots?: string;
+  event: NostrEvent;
 };
 
-function presenter(articleEvent: NostrEvent, profileEvent?: NostrEvent) {
+function presenter(
+  articleEvent: NostrEvent,
+  profileEvent?: NostrEvent,
+  otsEvent?: NostrEvent
+) {
   return {
+    id: articleEvent.id,
     title: getTagValue(articleEvent, "title"),
     author: profileEvent ? profileName(profileEvent) : undefined,
     authorUrl: `https://njump.me/${nip19.npubEncode(articleEvent.pubkey)}`,
     formatedDate: formatDate(articleEvent.created_at),
-    publishedTime: new Date(articleEvent.created_at * 1000).toISOString(),
+    publishedAt: new Date(articleEvent.created_at * 1000).toISOString(),
+    timestampedAt: undefined,
     content: articleEvent.content,
     summary:
       getTagValue(articleEvent, "summary") ||
       articleEvent.content.substring(0, 200),
+    ots: otsEvent ? otsEvent.content : undefined,
+    event: articleEvent,
   };
 }
 
@@ -65,25 +89,29 @@ export function ArticleModel(naddr: string): Model<Article | undefined> {
 
     return store.replaceable(kind, pubkey, identifier).pipe(
       switchMap((article?: NostrEvent) => {
-        if (!article) {
-          return timer(100).pipe(
-            switchMap(() => store.replaceable(kind, pubkey, identifier)),
-            switchMap((retryArticle?: NostrEvent) => {
-              if (!retryArticle) return EMPTY;
+        if (!article) return EMPTY;
 
-              return store.replaceable(KINDS.PROFILE, pubkey).pipe(
-                map((profile?: NostrEvent) => presenter(retryArticle, profile)),
-                startWith(presenter(retryArticle))
-              );
-            })
-          );
-        }
+        // Load Opentimestamps events
+        otsLoader(article.id).subscribe();
+        // otsLoader().subscribe();
 
-        return store.replaceable(KINDS.PROFILE, pubkey).pipe(
-          map((profile?: NostrEvent) => presenter(article, profile)),
-          startWith(presenter(article))
+        // Start fetching profile and timestamp
+        const profile$ = store
+          .replaceable(KINDS.PROFILE, pubkey)
+          .pipe(startWith(undefined));
+        const timestamp$ = store.filters({
+          kinds: [KINDS.TIMESTAMP],
+          "#e": [article.id],
+        });
+
+        // Compute the presenter from the article, profile, timestamp
+        return combineLatest([of(article), profile$, timestamp$]).pipe(
+          map(([article, profile, timestamp]) =>
+            presenter(article, profile, timestamp)
+          )
         );
-      })
+      }),
+      shareReplay(1)
     );
   };
 }

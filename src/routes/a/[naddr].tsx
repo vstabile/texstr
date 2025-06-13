@@ -1,9 +1,10 @@
-import { createResource, Suspense } from "solid-js";
+import { createEffect, createResource } from "solid-js";
 import { useParams } from "@solidjs/router";
 import { Show } from "solid-js";
 import { Title, Meta } from "@solidjs/meta";
 import { eventStore } from "../../stores/eventStore";
 import MarkdownRenderer from "../../components/MarkdownRenderer";
+import Timestamp from "../../components/Timestamp";
 import { ArticleModel } from "../../models/article";
 import { APP_NAME, BASE_URL } from "../../config/meta";
 import { firstValueFrom } from "rxjs";
@@ -16,7 +17,7 @@ export default function Article() {
   );
 
   return (
-    <Suspense>
+    <>
       <Title>{article()?.title || APP_NAME}</Title>
       <Meta name="description" content={article()?.summary} />
       <Meta property="og:title" content={article()?.title} />
@@ -28,7 +29,7 @@ export default function Article() {
       <Meta property="article:author" content={article()?.author} />
       <Meta
         property="article:published_time"
-        content={article()?.publishedTime}
+        content={article()?.publishedAt}
       />
       <Meta name="twitter:card" content="summary" />
       <Meta name="twitter:title" content={article()?.title} />
@@ -49,13 +50,15 @@ export default function Article() {
                 {article()?.author}
               </a>
             </Show>
-            <div class="text-sm text-gray-500 dark:text-gray-400 italic">
-              {article()?.formatedDate}
-            </div>
+            <Show when={article()}>
+              <div class="text-sm text-gray-500 dark:text-gray-400 italic">
+                <Timestamp article={article()!} />
+              </div>
+            </Show>
           </div>
           <MarkdownRenderer content={article()?.content || ""} />
         </div>
       </div>
-    </Suspense>
+    </>
   );
 }

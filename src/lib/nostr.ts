@@ -12,4 +12,5 @@ export const RELAYS = [
 export const KINDS = {
   ARTICLE: 30023,
   PROFILE: 0,
+  TIMESTAMP: 1040,
 };

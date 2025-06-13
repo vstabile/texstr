@@ -102,4 +102,8 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
+  .katex-display {
+    margin: 2em 0 !important;
+  }
 }
