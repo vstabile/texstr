@@ -7,6 +7,8 @@ import {
   startWith,
   switchMap,
   EMPTY,
+  take,
+  timer,
 } from "rxjs";
 import { formatDate, profileName } from "../lib/utils";
 import { nip19, type NostrEvent } from "nostr-tools";
@@ -46,35 +48,42 @@ export function ArticleModel(naddr: string): Model<Article | undefined> {
   const { pubkey, identifier, kind, relays } = data;
 
   return (store) => {
-    const result = store.replaceable(kind, pubkey, identifier).pipe(
-      switchMap((article?: NostrEvent) => {
-        if (!article) return EMPTY;
-
-        return store.replaceable(KINDS.PROFILE, pubkey).pipe(
-          map((profile?: NostrEvent) => presenter(article, profile)),
-          startWith(presenter(article))
-        );
-      })
-    );
-
-    return merge(
-      // Load the article
+    const loaders = merge(
       addressLoader({
         pubkey,
         kind,
         identifier,
         relays: mergeRelaySets(RELAYS, relays),
       }),
-      // Load the profile
       addressLoader({
         pubkey: pubkey,
         kind: 0,
       })
-    ).pipe(
-      // Ignore events from loaders since they get added to the store
-      ignoreElements(),
-      // Return the result of the store
-      mergeWith(result)
+    ).pipe(ignoreElements(), take(2));
+
+    loaders.subscribe();
+
+    return store.replaceable(kind, pubkey, identifier).pipe(
+      switchMap((article?: NostrEvent) => {
+        if (!article) {
+          return timer(100).pipe(
+            switchMap(() => store.replaceable(kind, pubkey, identifier)),
+            switchMap((retryArticle?: NostrEvent) => {
+              if (!retryArticle) return EMPTY;
+
+              return store.replaceable(KINDS.PROFILE, pubkey).pipe(
+                map((profile?: NostrEvent) => presenter(retryArticle, profile)),
+                startWith(presenter(retryArticle))
+              );
+            })
+          );
+        }
+
+        return store.replaceable(KINDS.PROFILE, pubkey).pipe(
+          map((profile?: NostrEvent) => presenter(article, profile)),
+          startWith(presenter(article))
+        );
+      })
     );
   };
 }

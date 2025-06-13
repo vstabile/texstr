@@ -4,7 +4,6 @@ import { Show } from "solid-js";
 import { Title, Meta } from "@solidjs/meta";
 import { eventStore } from "../../stores/eventStore";
 import MarkdownRenderer from "../../components/MarkdownRenderer";
-import ArticleSkeleton from "../../components/ArticleSkeleton";
 import { ArticleModel } from "../../models/article";
 import { APP_NAME, BASE_URL } from "../../config/meta";
 import { firstValueFrom } from "rxjs";
