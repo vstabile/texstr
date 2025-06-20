@@ -12,6 +12,20 @@ const styles = `
     margin-top: 2em;
     margin-bottom: 2em;
   }
+
+  /* LaTeX sizing */
+  .math-tex {
+    font-size: 0.75em;
+  }
+  .math-tex-display {
+    font-size: 0.75em;
+  }
+  
+  /* Adjust superscript and subscript size */
+  .katex .sizing.reset-size6.size3,
+  .katex .fontsize-ensurer.reset-size6.size3 {
+    font-size: 0.85em;
+  }
 `;
 
 export default function MarkdownRenderer(props: Props) {
