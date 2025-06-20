@@ -3,17 +3,13 @@ import {
   ignoreElements,
   map,
   merge,
-  mergeWith,
   startWith,
   switchMap,
   EMPTY,
   take,
-  timer,
   combineLatest,
   of,
-  distinctUntilChanged,
   shareReplay,
-  tap,
 } from "rxjs";
 import { formatDate, profileName } from "../lib/utils";
 import { nip19, type NostrEvent } from "nostr-tools";
@@ -21,13 +17,6 @@ import { getTagValue, mergeRelaySets } from "applesauce-core/helpers";
 import type { AddressPointer } from "nostr-tools/nip19";
 import { addressLoader, otsLoader } from "../lib/loaders";
 import { KINDS, RELAYS } from "../lib/nostr";
-import {
-  verify,
-  verifiers,
-  read,
-  info,
-} from "@lacrypta/typescript-opentimestamps";
-import { base64ToBytes } from "~/lib/ots";
 
 export type Article = {
   id: string;
@@ -99,10 +88,12 @@ export function ArticleModel(naddr: string): Model<Article | undefined> {
         const profile$ = store
           .replaceable(KINDS.PROFILE, pubkey)
           .pipe(startWith(undefined));
-        const timestamp$ = store.filters({
-          kinds: [KINDS.TIMESTAMP],
-          "#e": [article.id],
-        });
+        const timestamp$ = store
+          .filters({
+            kinds: [KINDS.TIMESTAMP],
+            "#e": [article.id],
+          })
+          .pipe(startWith(undefined));
 
         // Compute the presenter from the article, profile, timestamp
         return combineLatest([of(article), profile$, timestamp$]).pipe(

@@ -13,16 +13,17 @@ import {
 } from "~/lib/ots";
 import { sha256 } from "@noble/hashes/sha256";
 import { randomBytes, hexToBytes } from "@noble/hashes/utils";
+import { storage } from "~/lib/storage";
 
 interface OTSStore {
   partialProofs: Record<string, Timestamp>; // digest -> Timestamp object
   fullProofs: Record<string, Timestamp>; // digest -> Timestamp object
 }
 
-// Load from localStorage
+// Load from storage
 const loadFromStorage = (): OTSStore => {
   try {
-    const stored = localStorage.getItem("ots-store");
+    const stored = storage.getItem("ots-store");
     if (stored) {
       const parsed = JSON.parse(stored);
       // Convert stored JSON back to Timestamp objects with proper Uint8Array handling
@@ -48,14 +49,14 @@ const loadFromStorage = (): OTSStore => {
       return { partialProofs, fullProofs };
     }
   } catch (error) {
-    console.error("Failed to load OTS store from localStorage:", error);
+    console.error("Failed to load OTS store from storage:", error);
   }
   return { partialProofs: {}, fullProofs: {} };
 };
 
 const [otsStore, setOtsStore] = createStore<OTSStore>(loadFromStorage());
 
-// Save to localStorage whenever store changes
+// Save to storage whenever store changes
 const saveToStorage = (newStore: OTSStore) => {
   try {
     // Serialize Timestamp objects before storing
@@ -75,9 +76,9 @@ const saveToStorage = (newStore: OTSStore) => {
       fullProofs: serializedFullProofs,
     };
 
-    localStorage.setItem("ots-store", JSON.stringify(serializedStore));
+    storage.setItem("ots-store", JSON.stringify(serializedStore));
   } catch (error) {
-    console.error("Failed to save OTS store to localStorage:", error);
+    console.error("Failed to save OTS store to storage:", error);
   }
 };
 

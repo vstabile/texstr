@@ -1,4 +1,5 @@
-import { createMemo, createSignal, Match, Show, Switch } from "solid-js";
+import { createSignal, Match, Switch } from "solid-js";
+import { isServer } from "solid-js/web";
 import {
   Tooltip,
   TooltipContent,
@@ -24,7 +25,7 @@ export default function Timestamp(props: { article: Article }) {
   const [isWaiting, setIsWaiting] = createSignal(false);
   const [isStamping, setIsStamping] = createSignal(false);
   const [partialOTS, setPartialOTS] = createSignal<TimestampType | null>(
-    getPartialProof(props.article.id)
+    isServer ? null : getPartialProof(props.article.id)
   );
 
   async function requestTimestamp() {
@@ -88,6 +89,8 @@ export default function Timestamp(props: { article: Article }) {
   }
 
   function downloadOTS() {
+    if (isServer) return;
+
     console.log("downloading...");
     const ots = props.article.ots;
     const binaryStr = atob(ots!);
