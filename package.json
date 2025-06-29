@@ -15,6 +15,7 @@
     "@solidjs/meta": "^0.29.4",
     "@solidjs/router": "^0.15.0",
     "@solidjs/start": "^1.1.0",
+    "@vercel/analytics": "^1.5.0",
     "applesauce-actions": "^2.0.0",
     "applesauce-core": "^2.0.0",
     "applesauce-factory": "^2.0.0",

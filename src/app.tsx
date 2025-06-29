@@ -8,6 +8,7 @@ import Footer from "./components/Footer";
 import { MetaProvider } from "@solidjs/meta";
 import NotFound from "./routes/404";
 import { ThemeProvider } from "./components/ThemeProvider";
+import { Analytics } from "./components/Analytics";
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
                 {props.children}
                 <Footer />
               </div>
+              <Analytics />
             </Suspense>
           </MetaProvider>
         </ThemeProvider>
