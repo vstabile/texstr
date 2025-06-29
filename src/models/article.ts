@@ -10,6 +10,7 @@ import {
   combineLatest,
   of,
   shareReplay,
+  firstValueFrom,
 } from "rxjs";
 import { formatDate, profileName } from "../lib/utils";
 import { nip19, type NostrEvent } from "nostr-tools";
@@ -17,6 +18,7 @@ import { getTagValue, mergeRelaySets } from "applesauce-core/helpers";
 import type { AddressPointer } from "nostr-tools/nip19";
 import { addressLoader, otsLoader } from "../lib/loaders";
 import { KINDS, RELAYS } from "../lib/nostr";
+import { isServer } from "solid-js/web";
 
 export type Article = {
   id: string;
@@ -61,39 +63,86 @@ export function ArticleModel(naddr: string): Model<Article | undefined> {
   const { pubkey, identifier, kind, relays } = data;
 
   return (store) => {
-    const loaders = merge(
-      addressLoader({
-        pubkey,
-        kind,
-        identifier,
-        relays: mergeRelaySets(RELAYS, relays),
-      }),
-      addressLoader({
-        pubkey: pubkey,
-        kind: 0,
-      })
-    ).pipe(ignoreElements(), take(2));
+    // Create a promise for the initial profile load
+    const profilePromise = isServer
+      ? firstValueFrom(
+          addressLoader({
+            pubkey,
+            kind: KINDS.PROFILE,
+            relays: RELAYS,
+          })
+        ).catch(() => undefined)
+      : Promise.resolve(undefined);
 
-    loaders.subscribe();
+    // Promise for the initial article load
+    const articlePromise = isServer
+      ? firstValueFrom(
+          addressLoader({
+            pubkey,
+            kind,
+            identifier,
+            relays: mergeRelaySets(RELAYS, relays),
+          })
+        ).catch(() => undefined)
+      : Promise.resolve(undefined);
+
+    // Subscribe to loaders for client-side updates
+    if (!isServer) {
+      const loaders = merge(
+        addressLoader({
+          pubkey,
+          kind,
+          identifier,
+          relays: mergeRelaySets(RELAYS, relays),
+        }),
+        addressLoader({
+          pubkey: pubkey,
+          kind: KINDS.PROFILE,
+        })
+      ).pipe(ignoreElements(), take(2));
+
+      loaders.subscribe();
+    }
 
     return store.replaceable(kind, pubkey, identifier).pipe(
-      switchMap((article?: NostrEvent) => {
-        if (!article) return EMPTY;
+      switchMap(async (article?: NostrEvent) => {
+        if (!article) {
+          // Try to get the article from the promise if we're on the server
+          article = isServer ? await articlePromise : undefined;
+          if (!article) return EMPTY;
+        }
 
-        // Load Opentimestamps events
-        otsLoader(article.id).subscribe();
-        // otsLoader().subscribe();
+        // Get initial profile from promise if we're on the server
+        let initialProfile: NostrEvent | undefined;
+        if (isServer) {
+          initialProfile = await profilePromise;
+        }
+
+        // Get initial timestamp if we're on the server
+        let initialTimestamp: NostrEvent | undefined;
+        if (isServer) {
+          try {
+            initialTimestamp = await firstValueFrom(
+              store.filters({
+                kinds: [KINDS.TIMESTAMP],
+                "#e": [article.id],
+              })
+            );
+          } catch {
+            initialTimestamp = undefined;
+          }
+        }
 
         // Start fetching profile and timestamp
         const profile$ = store
           .replaceable(KINDS.PROFILE, pubkey)
-          .pipe(startWith(undefined));
+          .pipe(startWith(initialProfile));
         const timestamp$ = store
           .filters({
             kinds: [KINDS.TIMESTAMP],
             "#e": [article.id],
           })
-          .pipe(startWith(undefined));
+          .pipe(startWith(initialTimestamp));
 
         // Compute the presenter from the article, profile, timestamp
         return combineLatest([of(article), profile$, timestamp$]).pipe(
@@ -102,6 +151,7 @@ export function ArticleModel(naddr: string): Model<Article | undefined> {
           )
         );
       }),
+      switchMap((observable) => (observable === EMPTY ? EMPTY : observable)),
       shareReplay(1)
     );
   };

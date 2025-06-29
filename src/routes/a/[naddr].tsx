@@ -1,4 +1,4 @@
-import { createResource } from "solid-js";
+import { createResource, from } from "solid-js";
 import { useParams } from "@solidjs/router";
 import { Show } from "solid-js";
 import { Title, Meta } from "@solidjs/meta";
@@ -12,9 +12,7 @@ import { firstValueFrom } from "rxjs";
 export default function Article() {
   const params = useParams();
 
-  const [article] = createResource(() =>
-    firstValueFrom(eventStore.model(ArticleModel, params.naddr))
-  );
+  const article = from(eventStore.model(ArticleModel, params.naddr));
 
   return (
     <>
