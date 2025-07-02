@@ -58,6 +58,12 @@ export default function Article() {
                 </div>
               </Show>
             </div>
+            <Show when={article()?.summary}>
+              <h3 class="text-center">Abstract</h3>
+              <div class="text-sm">
+                <MarkdownRenderer content={article()?.summary || ""} />
+              </div>
+            </Show>
             <MarkdownRenderer content={article()?.content || ""} />
           </div>
         </Show>

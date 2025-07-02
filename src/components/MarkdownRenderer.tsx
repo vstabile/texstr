@@ -26,6 +26,10 @@ const styles = `
   .katex .fontsize-ensurer.reset-size6.size3 {
     font-size: 0.85em;
   }
+
+  .prose :where(h1, h2, h3, h4, h5, h6):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
+    font-weight: 700 !important;
+  }
 `;
 
 export default function MarkdownRenderer(props: Props) {
