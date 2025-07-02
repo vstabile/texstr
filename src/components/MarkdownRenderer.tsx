@@ -145,6 +145,7 @@ export default function MarkdownRenderer(props: Props) {
       // Style headings
       container.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach((elem) => {
         elem.classList.add("dark:text-gray-100");
+        elem.classList.add("font-bold");
       });
 
       // Style links

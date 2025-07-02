@@ -1,4 +1,4 @@
-import { from, Suspense } from "solid-js";
+import { from } from "solid-js";
 import { useParams } from "@solidjs/router";
 import { Show } from "solid-js";
 import { Title, Meta } from "@solidjs/meta";
