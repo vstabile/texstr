@@ -16,14 +16,12 @@ export default function App() {
       root={(props) => (
         <ThemeProvider>
           <MetaProvider>
-            <Suspense>
-              <div class="min-h-screen bg-background text-foreground font-serif flex flex-col">
-                <Header />
-                {props.children}
-                <Footer />
-              </div>
-              <Analytics />
-            </Suspense>
+            <div class="min-h-screen bg-background text-foreground font-serif flex flex-col">
+              <Header />
+              <Suspense>{props.children}</Suspense>
+              <Footer />
+            </div>
+            <Analytics />
           </MetaProvider>
         </ThemeProvider>
       )}
